@@ -21,12 +21,11 @@ public class User {
     public User() {
     }
 
-    public User(int id, String name, String email, int age, LocalDateTime createdAt) {
-        this.id = id;
+    public User(String name, String email, int age) {
         this.name = name;
         this.email = email;
         this.age = age;
-        this.createdAt = createdAt;
+        this.createdAt = LocalDateTime.now();
     }
 
     public int getId() {
@@ -67,5 +66,10 @@ public class User {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    @Override
+    public String toString() {
+        return "id: "+ id + ", name: " + name + ", email: " + email + ", age: " + age + ", createdAt: " + createdAt;
     }
 }
