@@ -5,6 +5,7 @@ import org.apache.logging.log4j.*;
 public class AppInterface {
     private static final Scanner scanner = new Scanner(System.in);
     private static final UserDao userDao = new UserDaoImpl();
+    private static final UserService userService = new UserService(userDao);
     private static final Logger logger = LogManager.getLogger(AppInterface.class);
 
     public static void main(String[] args) {
@@ -69,7 +70,7 @@ public class AppInterface {
         System.out.println("Введите ID пользователя: ");
         int id = Integer.parseInt(scanner.nextLine());
 
-        User user = userDao.findById(id);
+        User user = userService.getUserById(id);
         if (user != null) {
             System.out.println(user);
         } else {
@@ -87,8 +88,7 @@ public class AppInterface {
         System.out.println("Введите возраст: ");
         int age = Integer.parseInt(scanner.nextLine());
 
-        User user = new User(name, email, age);
-        userDao.save(user);
+        userService.createUser(name, email, age);
         System.out.println("Пользователь успешно создан!");
     }
 
@@ -96,7 +96,7 @@ public class AppInterface {
         System.out.print("Введите ID пользователя для изменения: ");
         int id = Integer.parseInt(scanner.nextLine());
 
-        User user = userDao.findById(id);
+        User user = userService.getUserById(id);
         if (user == null) {
             System.out.println("Пользователь с таким ID не найден!");
             return;
@@ -117,11 +117,10 @@ public class AppInterface {
 
         System.out.print("Введите возраст: ");
         String ageInput = scanner.nextLine();
-        if (!ageInput.isEmpty()) {
-            user.setAge(Integer.parseInt(ageInput));
-        }
+        Integer age = ageInput.isEmpty() ? null : Integer.parseInt(ageInput);
 
-        userDao.update(user);
+        userService.updateUser(id, name.isEmpty() ? null : name, email.isEmpty() ? null : email,
+                age);
         System.out.println("Пользователь успешно обновлен!");
     }
 
@@ -129,13 +128,13 @@ public class AppInterface {
         System.out.print("Введите ID пользователя для удаления: ");
         int id = Integer.parseInt(scanner.nextLine());
 
-        User user = userDao.findById(id);
+        User user = userService.getUserById(id);
         if (user == null) {
             System.out.println("Пользователь с таким ID не найден!");
             return;
         }
 
-        userDao.delete(id);
+        userService.deleteUser(id);
         System.out.println("Пользователь успешно удален!");
     }
 }
