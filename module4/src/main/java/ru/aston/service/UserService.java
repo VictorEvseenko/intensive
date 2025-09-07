@@ -2,6 +2,7 @@ package ru.aston.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.aston.entity.User;
 import ru.aston.exceptions.EntityNotFoundException;
 import ru.aston.models.UpsertUserRequest;
@@ -12,6 +13,7 @@ import java.text.MessageFormat;
 import java.util.List;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
