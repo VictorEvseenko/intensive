@@ -41,3 +41,9 @@ services:
     ports:
       - "1025:1025"
       - "8025:8025"
+      
+  eureka:
+    image: springcloud/eureka
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
