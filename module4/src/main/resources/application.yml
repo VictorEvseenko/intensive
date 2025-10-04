@@ -1,4 +1,7 @@
 spring:
+  kafka:
+    bootstrap-servers: localhost:9092
+
   application:
     name: module4
   config:
@@ -8,9 +11,11 @@ spring:
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
+
   jpa:
     hibernate:
       ddl-auto: create
+
   cloud:
     config:
       enabled: false

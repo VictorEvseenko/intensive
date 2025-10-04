@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.aston.entity.User;
 import ru.aston.exceptions.EntityNotFoundException;
+import ru.aston.kafka.UserEventProducer;
 import ru.aston.models.UpsertUserRequest;
 import ru.aston.models.UserResponse;
 import ru.aston.repository.UserRepository;
@@ -20,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final UserEventProducer userEventProducer;
 
     @CircuitBreaker(name = "databaseOperation", fallbackMethod = "createUserFallback")
     @Retry(name = "databaseOperation")
@@ -29,6 +31,7 @@ public class UserService {
         user.setEmail(upsertUserRequest.getEmail());
         user.setAge(upsertUserRequest.getAge());
         User savedUser = userRepository.save(user);
+        userEventProducer.sendUserCreatedEvent(savedUser.getEmail(), savedUser.getName());
         return convertToResponse(savedUser);
     }
 
@@ -70,10 +73,10 @@ public class UserService {
     }
 
     public void deleteUser(Integer id) {
-        if (!userRepository.existsById(id)) {
-            throw new EntityNotFoundException(MessageFormat.format("Пользователь с ID {0} не найден", id));
-        }
+        User user = userRepository.findById(id).orElseThrow(() ->
+                new EntityNotFoundException(MessageFormat.format("Пользователь с ID {0} не найден", id)));
         userRepository.deleteById(id);
+        userEventProducer.sendUserDeletedEvent(user.getEmail(), user.getName());
     }
 
     private UserResponse convertToResponse(User user) {
